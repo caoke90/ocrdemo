@@ -5,6 +5,7 @@ const getV=require('./getV')
 const getLineArrByGrayData=require('./getLineArrByGrayData')
 const getStrByNum=require('./getStrByNum')
 const getTextArr=require('./getTextArr')
+require('./sortAdd')
 // const renderTextToImageData=require('./renderTextToImageData')
 // const mekflink=require('./mekflink')
 
@@ -40,7 +41,7 @@ function changeV3(x,y,imageData) {
   imageData.data[k+3]=255;
 }
 
-const buff=fs.readFileSync('../capture/Arial.png');
+const buff=fs.readFileSync('./Arial12.png');
 // const buff=fs.readFileSync('test/test.png');
 // const buff=fs.readFileSync('test/tt.png');
 // const buff=fs.readFileSync('test/test2.png');
@@ -111,22 +112,24 @@ const textArr=getTextArr();
 let n=0;
 let repeatN=0;
 const oneMap={}
+const oneArr=[]
 posArr.forEach(function (pos1,i) {
   const tz=tzArr[i];
-  if(!oneMap[tz]){
-    oneMap[tz]=textArr[n];
-  }else if(oneMap[tz]!==textArr[n]){
-    repeatN++;
-    console.log(tz,textArr[n],oneMap[tz])
-  }
+  oneArr.sortAdd(tz)
+  // if(!oneMap[tz]){
+  //   oneMap[tz]=textArr[n];
+  // }else if(oneMap[tz]!==textArr[n]){
+  //   repeatN++;
+  //   console.log(tz,textArr[n],oneMap[tz])
+  // }
   // mekflink.add(tz,textArr[n])
   n++;
   if(n===textArr.length){
     n=0;
   }
 })
-console.log('repeatN',repeatN)
-fs.writeFileSync('oneMap.json',JSON.stringify(oneMap))
+console.log(oneArr.length,posArr.length)
+// fs.writeFileSync('oneMap.json',JSON.stringify(oneMap))
 
 // if(fs.existsSync('data.json')){
 //   const data=JSON.parse(fs.readFileSync('data.json').toString())

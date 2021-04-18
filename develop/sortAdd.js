@@ -92,18 +92,26 @@ Array.prototype.sortFindLen=function(str){
 }
 //添加字符到排序数组中
 Array.prototype.sortAdd=function(str){
+
   if(typeof str==='string'){
     const [n,len,dis]=this.sortFindLen(str)
     if(dis===1){
-      this.splice(n+1,0,str)
+      if(n!==-1&&len===this[n].length){
+        this.splice(n,1,str)
+      }else{
+        this.splice(n+1,0,str)
+      }
     }else if(dis===-1){
-      this.splice(n,0,str)
+      if(len!==str.length){
+        this.splice(n,0,str)
+      }
     }
   }
 }
 
-const arr=['11','21']
-arr.sortAdd('111')
-arr.sortAdd('0')
-arr.sortAdd('3')
-console.log(arr)
+// const arr=['11','21']
+// arr.sortAdd('1')
+// arr.sortAdd('111')
+// arr.sortAdd('0')
+// arr.sortAdd('3')
+// console.log(arr)
