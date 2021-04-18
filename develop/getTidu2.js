@@ -90,11 +90,11 @@ tempArr.forEach(function (pos1,i) {
           hu++;
         }
       }
-     let add=0
-      if(2*allY>hu*(y1+y2-1)){
-        add=8;
-      }
-      fArr.push(getStrByNum(hu+add));
+     // let add=0
+     //  if(2*allY>hu*(y1+y2-1)){
+     //    add=8;
+     //  }
+      fArr.push(getStrByNum(hu));
       // fArr.push(getStrByNum(add));
     }
     tzArr.push(fArr.join(''))
@@ -113,9 +113,30 @@ let n=0;
 let repeatN=0;
 const oneMap={}
 const oneArr=[]
+const wzArr=[]
 posArr.forEach(function (pos1,i) {
-  const tz=tzArr[i];
-  oneArr.sortAdd(tz)
+  const str=tzArr[i];
+  const text=textArr[n];
+  const [n2,len,dis]=oneArr.sortFindLen(str)
+  if(dis===1){
+    if(n2!==-1&&len===oneArr[n2].length){
+      console.log(dis,wzArr[n2],text)
+      oneArr.splice(n2,1,str)
+      wzArr.splice(n2,1,text)
+    }else{
+      oneArr.splice(n2+1,0,str)
+      wzArr.splice(n2+1,0,text)
+    }
+  }else if(dis===-1){
+    if(len!==str.length){
+      oneArr.splice(n2,0,str)
+      wzArr.splice(n2,0,text)
+    }else{
+      console.log(dis,text,wzArr[n2])
+    }
+  }else if(text!==wzArr[n2]){
+    console.log(text,wzArr[n2])
+  }
   // if(!oneMap[tz]){
   //   oneMap[tz]=textArr[n];
   // }else if(oneMap[tz]!==textArr[n]){
