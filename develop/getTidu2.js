@@ -41,7 +41,7 @@ function changeV3(x,y,imageData) {
   imageData.data[k+3]=255;
 }
 
-const buff=fs.readFileSync('./Arial12.png');
+const buff=fs.readFileSync('./Arial.png');
 // const buff=fs.readFileSync('test/test.png');
 // const buff=fs.readFileSync('test/tt.png');
 // const buff=fs.readFileSync('test/test2.png');
