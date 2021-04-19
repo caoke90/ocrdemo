@@ -93,7 +93,7 @@ Array.prototype.sortFindLen=function(key,n1=0,n2=0){
 //添加字符到排序数组中
 function sortAdd(key,val,dataMap){
   if(typeof key==='string'){
-    const [n,len,dis]=tzArr.sortFindLen(key)
+    const [n,len,dis]=dataMap.sortFindLen(key)
     if(dis===1){
       dataMap.splice(n+1,0,{key,data:[val]})
     }else if(dis===-1){
