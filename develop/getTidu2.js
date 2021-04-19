@@ -90,11 +90,11 @@ tempArr.forEach(function (pos1,i) {
           hu++;
         }
       }
-     // let add=0
-     //  if(2*allY>hu*(y1+y2-1)){
-     //    add=8;
-     //  }
-      fArr.push(getStrByNum(hu));
+     let add=0
+      if(2*allY>hu*(y1+y2-1)){
+        add=10;
+      }
+      fArr.push(getStrByNum(hu+add));
       // fArr.push(getStrByNum(add));
     }
     tzArr.push(fArr.join(''))
@@ -119,7 +119,7 @@ posArr.forEach(function (pos1,i) {
   const text=textArr[n];
   const [n2,len,dis]=oneArr.sortFindLen(str)
   if(dis===1){
-    if(n2!==-1&&len===oneArr[n2].length){
+    if(n2!==-1&&len===oneArr[n2].length&&text!==wzArr[n2]){
       console.log(dis,wzArr[n2],text)
       oneArr.splice(n2,1,str)
       wzArr.splice(n2,1,text)
@@ -128,7 +128,7 @@ posArr.forEach(function (pos1,i) {
       wzArr.splice(n2+1,0,text)
     }
   }else if(dis===-1){
-    if(len!==str.length){
+    if(len!==str.length||text===wzArr[n2]){
       oneArr.splice(n2,0,str)
       wzArr.splice(n2,0,text)
     }else{
@@ -150,51 +150,8 @@ posArr.forEach(function (pos1,i) {
   }
 })
 console.log(oneArr.length,posArr.length)
-// fs.writeFileSync('oneMap.json',JSON.stringify(oneMap))
+oneMap.oneArr=oneArr
+oneMap.wzArr=wzArr
+fs.writeFileSync('oneMap.json',JSON.stringify(oneMap))
 
-// if(fs.existsSync('data.json')){
-//   const data=JSON.parse(fs.readFileSync('data.json').toString())
-//   mekflink.AMap=data.AMap||mekflink.AMap
-//   mekflink.BMap=data.BMap||mekflink.BMap
-//   mekflink.CMap=data.CMap||mekflink.CMap
-// }
-//
-// // fs.writeFileSync('data.json',JSON.stringify(mekflink.getData()))
-// mekflink.makeGl();
-//
-// function learn(isShow) {
-//   let rNum=0;
-//   let eNum=0;
-//   let n=0
-// //识别
-//   posArr.forEach(function (pos1,i) {
-//     const text=mekflink.fastSolve(tzArr[i])
-//     if(text[0]===textArr[n]&&text.length===1){
-//       rNum++
-//     }else{
-//       eNum++
-//       mekflink.add(tzArr[i],textArr[n])
-//     }
-//     // console.log(text)
-//     renderTextToImageData(text,pos1,imageData)
-//     n++;
-//     if(n===textArr.length){
-//       n=0;
-//     }
-//   })
-//   mekflink.makeGl();
-//   console.log(rNum,eNum,rNum/posArr.length,repeatN)
-//   // fs.writeFileSync('data.json',JSON.stringify(mekflink.getData()))
-//   if(rNum+repeatN+repeatN>posArr.length){
-//
-//   }else{
-//     // learn()
-//   }
-// }
-// learn()
-//
-// function saveImageToFile(imageData,filename) {
-//   var buffer = PNG.sync.write(imageData, {filterType: 4});
-//   fs.writeFileSync(filename,buffer)
-// }
-// saveImageToFile(imageData,'demo2.png')
+
