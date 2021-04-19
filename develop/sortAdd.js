@@ -85,30 +85,25 @@ function findLen(str,hasSortArr,callback) {
 }
 
 //[n,len,dis]
-Array.prototype.sortFindLen=function(str){
-  return findLen(str,this,function (str1,str2) {
-    return compareLen(0,0,str1,str2)
+Array.prototype.sortFindLen=function(key,n1=0,n2=0){
+  return findLen(key,this,function (str1,obj) {
+    return compareLen(n1,n2,str1,obj.key)
   })
 }
 //添加字符到排序数组中
-Array.prototype.sortAdd=function(str){
-
-  if(typeof str==='string'){
-    const [n,len,dis]=this.sortFindLen(str)
+function sortAdd(key,val,dataMap){
+  if(typeof key==='string'){
+    const [n,len,dis]=tzArr.sortFindLen(key)
     if(dis===1){
-      if(n!==-1&&len===this[n].length){
-        this.splice(n,1,str)
-      }else{
-        this.splice(n+1,0,str)
-      }
+      dataMap.splice(n+1,0,{key,data:[val]})
     }else if(dis===-1){
-      if(len!==str.length){
-        this.splice(n,0,str)
-      }
+      dataMap.splice(n,0,{key,data:[val]})
+    }else if(dataMap[n].data.indexOf(val)===-1){
+      dataMap[n].data.push(val)
     }
   }
 }
-
+module.exports=sortAdd
 // const arr=['11','21']
 // arr.sortAdd('1')
 // arr.sortAdd('111')

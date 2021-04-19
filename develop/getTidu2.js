@@ -5,8 +5,8 @@ const getV=require('./getV')
 const getLineArrByGrayData=require('./getLineArrByGrayData')
 const getStrByNum=require('./getStrByNum')
 const getTextArr=require('./getTextArr')
-require('./sortAdd')
-// const renderTextToImageData=require('./renderTextToImageData')
+const sortAdd=require('./sortAdd')
+const renderTextToImageData=require('./renderTextToImageData')
 // const mekflink=require('./mekflink')
 
 function changeV(x,y,imageData) {
@@ -41,23 +41,16 @@ function changeV3(x,y,imageData) {
   imageData.data[k+3]=255;
 }
 
-const buff=fs.readFileSync('./Arial.png');
-// const buff=fs.readFileSync('test/test.png');
-// const buff=fs.readFileSync('test/tt.png');
-// const buff=fs.readFileSync('test/test2.png');
-// const buff=fs.readFileSync('test/t2.png');
-const imageData=PNG.sync.read(buff)
-const grayData=getGrayData(imageData)
-const tempArr=getLineArrByGrayData(grayData)
 
-for (let y = 0; y < grayData.height; y++) {
-  for (let x = 0; x < grayData.width; x++) {
-    const v=getV(x,y,grayData)
-    if(v===undefined){
-      changeV2(x,y,imageData)
-    }
-  }
-}
+
+// for (let y = 0; y < grayData.height; y++) {
+//   for (let x = 0; x < grayData.width; x++) {
+//     const v=getV(x,y,grayData)
+//     if(v===undefined){
+//       changeV2(x,y,imageData)
+//     }
+//   }
+// }
 function getSameH(x,y,grayData) {
   let h=1;
   while (getV(x,y+h,grayData)!==undefined){
@@ -72,86 +65,142 @@ function getSameW(x,y,grayData) {
   }
   return h;
 }
-const tzArr=[]
-const posArr=[]
-tempArr.forEach(function (pos1,i) {
-  const [x1,y1,x2,y2]=pos1
-  const h1=y2-y1
-  if(h1<50){
-    const fArr=[];
-    for(let x=x1;x<x2;x++){
-      let hu=0;
-      let allY=0;
+function getTzArr (posArr,grayData) {
+  const tzArr=[]
+  posArr.forEach(function (pos1,i) {
+    const tz=getTz(pos1,grayData)
+    tzArr.push(tz)
+  })
+  return tzArr;
+}
+function getTz (pos1,grayData) {
+  const [x1, y1, x2, y2] = pos1
+  const h1 = y2 - y1
+  if (h1 < 50) {
+    const fArr = [];
+    for (let x = x1; x < x2; x++) {
+      let hu = 0;
+      let allY = 0;
 
-      for(let y=y1;y<y2;y++){
-        const v=getV(x,y,grayData)
-        if(v!==undefined){
-          allY=allY+y
+      for (let y = y1; y < y2; y++) {
+        const v = getV(x, y, grayData)
+        if (v !== undefined) {
+          allY = allY + y
           hu++;
         }
       }
-     let add=0
-      if(2*allY>hu*(y1+y2-1)){
-        add=10;
+      let add = 0
+      if (2 * allY > hu * (y1 + y2 - 1)) {
+        add = 10;
       }
-      fArr.push(getStrByNum(hu+add));
-      // fArr.push(getStrByNum(add));
+      fArr.push(getStrByNum(hu));
     }
-    tzArr.push(fArr.join(''))
-    posArr.push(pos1)
+    return fArr.join('');
   }
-})
+}
 /*
 textArr 文字库
 tzArr 特征
-posArr 区域
 rectArr 文字数据
  */
+let oneMap=[]
+if(!fs.existsSync('oneMap.json')){
+  const buff=fs.readFileSync('./Arial.png');
+  const imageData=PNG.sync.read(buff)
+  const grayData=getGrayData(imageData)
+  const posArr=getLineArrByGrayData(grayData)
 
-const textArr=getTextArr();
-let n=0;
-let repeatN=0;
-const oneMap={}
-const oneArr=[]
-const wzArr=[]
-posArr.forEach(function (pos1,i) {
-  const str=tzArr[i];
-  const text=textArr[n];
-  const [n2,len,dis]=oneArr.sortFindLen(str)
-  if(dis===1){
-    if(n2!==-1&&len===oneArr[n2].length&&text!==wzArr[n2]){
-      console.log(dis,wzArr[n2],text)
-      oneArr.splice(n2,1,str)
-      wzArr.splice(n2,1,text)
-    }else{
-      oneArr.splice(n2+1,0,str)
-      wzArr.splice(n2+1,0,text)
+  let index=0;
+  const textArr=getTextArr();
+  const wzAllArr=[]
+  const tzAllArr=[]
+  posArr.forEach(function (pos1,i) {
+    const tz=getTz(pos1,grayData)
+    tzAllArr.push(tz)
+    wzAllArr.push(textArr[index])
+    index++;
+    if(index===textArr.length){
+      index=0;
     }
-  }else if(dis===-1){
-    if(len!==str.length||text===wzArr[n2]){
-      oneArr.splice(n2,0,str)
-      wzArr.splice(n2,0,text)
-    }else{
-      console.log(dis,text,wzArr[n2])
+  })
+
+  tzAllArr.forEach(function (key,i) {
+    const val=wzAllArr[i];
+    sortAdd(key,val,oneMap)
+  })
+
+  fs.writeFileSync('oneMap.json',JSON.stringify(oneMap))
+
+}else{
+  oneMap=JSON.parse(fs.readFileSync('oneMap.json').toString())
+}
+
+
+function saveImageToFile(imageData,filename) {
+  var buffer = PNG.sync.write(imageData, {filterType: 4});
+  fs.writeFileSync(filename,buffer)
+}
+
+function demo () {
+  const buff=fs.readFileSync('./test.png');
+  const imageData=PNG.sync.read(buff)
+  const grayData=getGrayData(imageData)
+  const posArr=getLineArrByGrayData(grayData)
+  //透明
+  for (let y = 0; y < grayData.height; y++) {
+    for (let x = 0; x < grayData.width; x++) {
+      const v=getV(x,y,grayData)
+      if(v===undefined){
+        changeV2(x,y,imageData)
+      }
     }
-  }else if(text!==wzArr[n2]){
-    console.log(text,wzArr[n2])
   }
-  // if(!oneMap[tz]){
-  //   oneMap[tz]=textArr[n];
-  // }else if(oneMap[tz]!==textArr[n]){
-  //   repeatN++;
-  //   console.log(tz,textArr[n],oneMap[tz])
-  // }
-  // mekflink.add(tz,textArr[n])
-  n++;
-  if(n===textArr.length){
-    n=0;
-  }
-})
-console.log(oneArr.length,posArr.length)
-oneMap.oneArr=oneArr
-oneMap.wzArr=wzArr
-fs.writeFileSync('oneMap.json',JSON.stringify(oneMap))
 
+  const tzArr=getTzArr(posArr,grayData)
+  tzArr.forEach(function (tz,m) {
+    const arr=[]
+    const darr=[]
+    let i=0;
+    let pre=0;
+    let d='';
+    while (i<tz.length){
+      const [n,len,dis]=oneMap.sortFindLen(tz,i)
+      const obj=oneMap[n]
+      if(len===obj.key.length){
+        if(d){
+          arr.push(d)
+          d=''
+        }
+        arr.push(obj.data[0])
 
+        pre=i;
+        i=i+len;
+      }else{
+        if(i-pre>1){
+          if(d){
+            arr.push(d)
+          }
+          d=tz[i];
+        }else{
+          d=d+tz[i];
+          if(i===tz.length-1){
+            arr.push(d)
+          }
+        }
+        pre=i;
+        i++
+      }
+    }
+
+    const pos1=posArr[m]
+    // renderTextToImageData(arr,pos1,imageData)
+
+    if(arr.length>0){
+      console.log(arr)
+    }
+  })
+
+  saveImageToFile(imageData,'demo2.png')
+}
+
+demo();
