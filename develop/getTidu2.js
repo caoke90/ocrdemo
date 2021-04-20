@@ -5,7 +5,7 @@ const getV=require('./getV')
 const getLineArrByGrayData=require('./getLineArrByGrayData')
 const getStrByNum=require('./getStrByNum')
 const getTextArr=require('./getTextArr')
-const sortAdd=require('./sortAdd')
+const {sortAdd,sortFind}=require('./sortAdd')
 const renderTextToImageData=require('./renderTextToImageData')
 // const mekflink=require('./mekflink')
 
@@ -75,28 +75,33 @@ function getTzArr (posArr,grayData) {
 }
 function getTz (pos1,grayData) {
   const [x1, y1, x2, y2] = pos1
-  const h1 = y2 - y1
-  if (h1 < 50) {
-    const fArr = [];
-    for (let x = x1; x < x2; x++) {
-      let hu = 0;
-      let allY = 0;
-
-      for (let y = y1; y < y2; y++) {
-        const v = getV(x, y, grayData)
-        if (v !== undefined) {
-          allY = allY + y
-          hu++;
-        }
+  const fArr = [];
+  for (let x = x1; x < x2; x++) {
+    let hu = 0;
+    for (let y = y1; y < y2; y++) {
+      const v = getV(x, y, grayData)
+      if (v !== undefined) {
+        hu++;
       }
-      let add = 0
-      if (2 * allY > hu * (y1 + y2 - 1)) {
-        add = 10;
-      }
-      fArr.push(getStrByNum(hu));
     }
-    return fArr.join('');
+    fArr.push(getStrByNum(hu));
   }
+  return fArr.join('');
+}
+function getTzY (pos1,grayData) {
+  const [x1, y1, x2, y2] = pos1
+  const fArr = [];
+  for (let y = y1; y < y2; y++) {
+    let hu = 0;
+    for (let x = x1; x < x2; x++) {
+      const v = getV(x, y, grayData)
+      if (v !== undefined) {
+        hu++;
+      }
+    }
+    fArr.push(getStrByNum(hu));
+  }
+  return fArr.join('');
 }
 /*
 textArr 文字库
@@ -116,7 +121,8 @@ if(!fs.existsSync('oneMap.json')){
   const tzAllArr=[]
   posArr.forEach(function (pos1,i) {
     const tz=getTz(pos1,grayData)
-    tzAllArr.push(tz)
+    const tzY=getTzY(pos1,grayData)
+    tzAllArr.push(tz+','+tzY)
     wzAllArr.push(textArr[index])
     index++;
     if(index===textArr.length){
@@ -134,7 +140,11 @@ if(!fs.existsSync('oneMap.json')){
 }else{
   oneMap=JSON.parse(fs.readFileSync('oneMap.json').toString())
 }
-
+oneMap.forEach(function (item) {
+  if(item.data.length>1){
+    console.log(item)
+  }
+})
 
 function saveImageToFile(imageData,filename) {
   var buffer = PNG.sync.write(imageData, {filterType: 4});
@@ -158,49 +168,45 @@ function demo () {
 
   const tzArr=getTzArr(posArr,grayData)
   tzArr.forEach(function (tz,m) {
-    const arr=[]
+    const tarr=[]
     const darr=[]
     let i=0;
     let pre=0;
     let d='';
     while (i<tz.length){
-      const [n,len,dis]=oneMap.sortFindLen(tz,i)
-      const obj=oneMap[n]
-      if(len===obj.key.length){
-        if(d){
-          arr.push(d)
-          d=''
-        }
-        arr.push(obj.data[0])
-
-        pre=i;
-        i=i+len;
-      }else{
-        if(i-pre>1){
-          if(d){
-            arr.push(d)
-          }
-          d=tz[i];
-        }else{
-          d=d+tz[i];
-          if(i===tz.length-1){
-            arr.push(d)
-          }
-        }
-        pre=i;
+      if(d===''&&tz[i]==='0'){
         i++
+      }else{
+        const arr=sortFind(tz,i,oneMap)
+        if(arr&&arr[2]===0){
+          const obj=oneMap[arr[0]]
+          tarr.push(obj.data)
+          if(d){
+            tarr.push(d)
+            d=''
+          }
+          i=i+arr[1];
+        }else{
+          d=d+tz[i]
+          if(i===tz.length.length-1&&d){
+            tarr.push(d)
+            d=''
+          }
+          i++
+        }
       }
+
     }
 
     const pos1=posArr[m]
-    // renderTextToImageData(arr,pos1,imageData)
+    // renderTextToImageData(tarr,pos1,imageData)
 
-    if(arr.length>0){
-      console.log(arr)
+    if(tarr.length>0){
+      console.log(tarr)
     }
   })
 
   saveImageToFile(imageData,'demo2.png')
 }
 
-demo();
+// demo();

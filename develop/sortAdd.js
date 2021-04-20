@@ -89,16 +89,46 @@ Array.prototype.sortFindLen=function(key,n1=0,n2=0){
 }
 //添加字符到排序数组中
 function sortAdd(key,val,dataMap){
-  if(typeof key==='string'){
-    const [n,len,dis]=dataMap.sortFindLen(key)
-    if(dis===1){
-      dataMap.splice(n+1,0,{key,data:[val]})
-    }else if(dis===-1){
-      dataMap.splice(n,0,{key,data:[val]})
-    }else if(dataMap[n].data.indexOf(val)===-1){
-      dataMap[n].data.push(val)
-    }
+  const [n,len,dis]=dataMap.sortFindLen(key)
+  if(dis===1){
+    dataMap.splice(n+1,0,{key,data:[val]})
+  }else if(dis===-1){
+    dataMap.splice(n,0,{key,data:[val]})
+  }else if(dataMap[n].data.indexOf(val)===-1){
+    dataMap[n].data.push(val)
   }
 }
-module.exports=sortAdd
+function sortFind(str,i,dataMap){
+  const [n,len,dis]=dataMap.sortFindLen(str,i)
+  if(dis===1){
+    if(len===dataMap[n].key.length){
+      return [n,len,0]
+    }else{
+      let m=n-1;
+      while (m>-1&&dataMap[m].key.length>len) {
+        m--
+      }
+      if(m>-1&&dataMap[m].key.length===len&&dataMap[m].key[dataMap[m].key.length-1]===str[i+len-1]){
+        return [m,len,0]
+      }
+    }
+
+  }else if(dis===-1){
+
+  }else{
+    return [n,len,0];
+  }
+}
+
+// const arr=[]
+// sortAdd('110','12',arr)
+// sortAdd('1112','12',arr)
+// sortAdd('1113','12',arr)
+//
+// console.log(arr)
+//
+// sortFind('111412',0,arr)
+module.exports={
+  sortAdd,sortFind
+}
 
