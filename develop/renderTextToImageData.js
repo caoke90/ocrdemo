@@ -62,5 +62,5 @@ module.exports=renderTextToImageData
 // posArr.forEach(function (pos1,i) {
 //   renderTextToImageData(textArr[i], pos1, imageData)
 // })
-
+//
 // fs.writeFileSync('demo.png',PNG.sync.write(imageData, {filterType: 4}))

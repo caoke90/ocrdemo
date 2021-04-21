@@ -41,16 +41,18 @@ function changeV3(x,y,imageData) {
   imageData.data[k+3]=255;
 }
 
+function setOpacity(grayData,imageData) {
+  for (let y = 0; y < grayData.height; y++) {
+    for (let x = 0; x < grayData.width; x++) {
+      const v=getV(x,y,grayData)
+      if(v===undefined){
+        changeV2(x,y,imageData)
+      }
+    }
+  }
+}
 
 
-// for (let y = 0; y < grayData.height; y++) {
-//   for (let x = 0; x < grayData.width; x++) {
-//     const v=getV(x,y,grayData)
-//     if(v===undefined){
-//       changeV2(x,y,imageData)
-//     }
-//   }
-// }
 function getSameH(x,y,grayData) {
   let h=1;
   while (getV(x,y+h,grayData)!==undefined){
@@ -114,7 +116,7 @@ if(!fs.existsSync('oneMap.json')){
   const imageData=PNG.sync.read(buff)
   const grayData=getGrayData(imageData)
   const posArr=getLineArrByGrayData(grayData)
-
+  setOpacity(grayData,imageData)
   let index=0;
   const textArr=getTextArr();
   const wzAllArr=[]
@@ -122,29 +124,35 @@ if(!fs.existsSync('oneMap.json')){
   posArr.forEach(function (pos1,i) {
     const tz=getTz(pos1,grayData)
     const tzY=getTzY(pos1,grayData)
-    tzAllArr.push(tz+','+tzY)
+    tzAllArr.push([tz,tzY])
     wzAllArr.push(textArr[index])
+    renderTextToImageData(textArr[index],pos1,imageData)
     index++;
     if(index===textArr.length){
       index=0;
     }
   })
 
-  tzAllArr.forEach(function (key,i) {
+  tzAllArr.forEach(function ([tz,tzY],i) {
     const val=wzAllArr[i];
-    sortAdd(key,val,oneMap)
+    sortAdd(tz,tzY,val,oneMap,posArr[i])
   })
 
   fs.writeFileSync('oneMap.json',JSON.stringify(oneMap))
 
+  // oneMap.forEach(function (item) {
+  //   if(item.data.length>1){
+  //     console.log(item)
+  //     item.data.forEach(function (arr) {
+  //       renderTextToImageData(arr[0],arr[2],imageData)
+  //     })
+  //   }
+  // })
+  saveImageToFile(imageData,'demo2.png')
 }else{
   oneMap=JSON.parse(fs.readFileSync('oneMap.json').toString())
 }
-oneMap.forEach(function (item) {
-  if(item.data.length>1){
-    console.log(item)
-  }
-})
+
 
 function saveImageToFile(imageData,filename) {
   var buffer = PNG.sync.write(imageData, {filterType: 4});
