@@ -55,14 +55,14 @@ textArr 文字库
 tzArr 特征
 rectArr 文字数据
  */
-
-const buff=fs.readFileSync('../data/Arial32.png');
+const textArr=getTextArr();
+const buff=fs.readFileSync('../data/Arial28.png');
 const imageData=PNG.sync.read(buff)
 const grayData=getGrayData(imageData)
 const posArr=getLineArrByGrayData(grayData)
 setOpacity(grayData,imageData)
 let index=0;
-const textArr=getTextArr();
+
 const wzAllArr=[]
 posArr.forEach(function (pos1,i) {
   wzAllArr.push(textArr[index])

@@ -88,12 +88,12 @@ Array.prototype.sortFindLen=function(key,n1=0,n2=0){
   })
 }
 //添加字符到排序数组中
-function sortAdd(key,key2,val,dataMap,pos1){
+function sortAdd(key,key2,val,dataMap){
   const [n,len,dis]=dataMap.sortFindLen(key)
   if(dis===1){
-    dataMap.splice(n+1,0,{key,data:[[val,key2,pos1]]})
+    dataMap.splice(n+1,0,{key,data:[[val,key2]]})
   }else if(dis===-1){
-    dataMap.splice(n,0,{key,data:[[val,key2,pos1]]})
+    dataMap.splice(n,0,{key,data:[[val,key2]]})
   }else if(dataMap[n].data.indexOf(key2)===-1){
     const data=dataMap[n].data;
     let index=-1;
@@ -102,10 +102,11 @@ function sortAdd(key,key2,val,dataMap,pos1){
         index=i;
         break
       }
-
     }
     if(index===-1){
-      dataMap[n].data.push([val,key2,pos1])
+      dataMap[n].data.push([val,key2])
+    }else if(data[index][0]!==val){
+      console.log(index,data[index],key,key2,val)
     }
 
   }

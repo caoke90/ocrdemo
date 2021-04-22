@@ -6,9 +6,8 @@ const getLineArrByGrayData=require('./getLineArrByGrayData')
 const getStrByNum=require('./getStrByNum')
 const getTextArr=require('./getTextArr')
 const {sortAdd,sortFind}=require('./sortAdd')
-const renderTextToImageData=require('./renderTextToImageData')
-// const mekflink=require('./mekflink')
-
+const {renderTextInit,renderTextToImageData}=require('./renderTextToImageData')
+renderTextInit()
 function changeV(x,y,imageData) {
   let k=4*imageData.width*y+4*x;
   imageData.data[k]=0;
@@ -110,49 +109,34 @@ textArr 文字库
 tzArr 特征
 rectArr 文字数据
  */
+const textArr=getTextArr();
+const pngArr=[]
+for(let i=12;i<33;i++){
+  pngArr.push(`Arial${i}.png`);
+}
+
 let oneMap=[]
 if(!fs.existsSync('oneMap.json')){
-  const buff=fs.readFileSync('./Arial.png');
-  const imageData=PNG.sync.read(buff)
-  const grayData=getGrayData(imageData)
-  const posArr=getLineArrByGrayData(grayData)
-  setOpacity(grayData,imageData)
-  let index=0;
-  const textArr=getTextArr();
-  const wzAllArr=[]
-  const tzAllArr=[]
-  posArr.forEach(function (pos1,i) {
-    const tz=getTz(pos1,grayData)
-    const tzY=getTzY(pos1,grayData)
-    tzAllArr.push([tz,tzY])
-    wzAllArr.push(textArr[index])
-    renderTextToImageData(textArr[index],pos1,imageData)
-    index++;
-    if(index===textArr.length){
-      index=0;
-    }
-  })
-
-  tzAllArr.forEach(function ([tz,tzY],i) {
-    const val=wzAllArr[i];
-    sortAdd(tz,tzY,val,oneMap,posArr[i])
+  pngArr.forEach(function (filename) {
+    const buff=fs.readFileSync('../data/'+filename);
+    const imageData=PNG.sync.read(buff)
+    const grayData=getGrayData(imageData)
+    const posArr=getLineArrByGrayData(grayData)
+    // setOpacity(grayData,imageData)
+    posArr.forEach(function (pos1,i) {
+      const tz=getTz(pos1,grayData)
+      const tzY=getTzY(pos1,grayData)
+      sortAdd(tz,tzY,textArr[i],oneMap)
+      // renderTextToImageData(textArr[i],pos1,imageData)
+    })
+    // saveImageToFile(imageData,'demo2.png')
   })
 
   fs.writeFileSync('oneMap.json',JSON.stringify(oneMap))
 
-  // oneMap.forEach(function (item) {
-  //   if(item.data.length>1){
-  //     console.log(item)
-  //     item.data.forEach(function (arr) {
-  //       renderTextToImageData(arr[0],arr[2],imageData)
-  //     })
-  //   }
-  // })
-  saveImageToFile(imageData,'demo2.png')
 }else{
   oneMap=JSON.parse(fs.readFileSync('oneMap.json').toString())
 }
-
 
 function saveImageToFile(imageData,filename) {
   var buffer = PNG.sync.write(imageData, {filterType: 4});
