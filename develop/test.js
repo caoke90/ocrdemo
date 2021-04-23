@@ -56,7 +56,7 @@ tzArr 特征
 rectArr 文字数据
  */
 const textArr=getTextArr();
-const buff=fs.readFileSync('../data/Arial31.png');
+const buff=fs.readFileSync('../data/Arial25.png');
 const imageData=PNG.sync.read(buff)
 const grayData=getGrayData(imageData)
 const posArr=getLineArrByGrayData(grayData)
@@ -66,16 +66,16 @@ let index=0;
 const wzAllArr=[]
 posArr.forEach(function (pos1,i) {
   wzAllArr.push(textArr[index])
-  renderTextToImageData(textArr[index],pos1,imageData)
-  // const [x1,y1,x2,y2,num]=pos1
-  // for(let j=y1;j<y2;j++){
-  //   changeV1(x1-1,j,imageData)
-  //   changeV1(x2,j,imageData)
-  // }
-  // for(let i=x1;i<x2;i++){
-  //   changeV1(i,y1-1,imageData)
-  //   changeV1(i,y2,imageData)
-  // }
+  // renderTextToImageData(textArr[index],pos1,imageData)
+  const [x1,y1,x2,y2,num]=pos1
+  for(let j=y1;j<y2;j++){
+    changeV1(x1-1,j,imageData)
+    changeV1(x2,j,imageData)
+  }
+  for(let i=x1;i<x2;i++){
+    changeV1(i,y1-1,imageData)
+    changeV1(i,y2,imageData)
+  }
   index++;
   if(index===textArr.length){
     index=0;
