@@ -92,19 +92,17 @@ function getTz (pos1,grayData) {
 function getTzY (pos1,grayData) {
   const [x1, y1, x2, y2] = pos1
   const fArr = [];
-  let allV=0;
   for (let y = y1; y < y2; y++) {
     let hu = 0;
     for (let x = x1; x < x2; x++) {
       const v = getV(x, y, grayData)
       if (v !== undefined) {
-        allV=allV+v
         hu++;
       }
     }
     fArr.push(getStrByNum(hu));
   }
-  return [fArr.join(''),allV];
+  return fArr.join('');
 }
 /*
 textArr 文字库
@@ -125,11 +123,12 @@ if(!fs.existsSync('oneMap.json')){
     const grayData=getGrayData(imageData)
     const posArr=getLineArrByGrayData(grayData)
     setOpacity(grayData,imageData)
+    console.log(filename,posArr.length)
     posArr.forEach(function (pos1,i) {
       const tz=getTz(pos1,grayData)
-      const [tzY,allV]=getTzY(pos1,grayData)
-      sortAdd(tz,tzY,allV,textArr[i],oneMap)
-      // renderTextToImageData(textArr[i],pos1,imageData)
+      const tzY=getTzY(pos1,grayData)
+      sortAdd(tz,tzY,textArr[i],oneMap)
+      renderTextToImageData(textArr[i],pos1,imageData)
     })
     saveImageToFile(imageData,'../'+filename)
   })

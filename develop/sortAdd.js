@@ -87,10 +87,10 @@ Array.prototype.sortFindLen=function(key,n1=0,n2=0){
     return compareLen(str1,obj.key,n1,n2)
   })
 }
-function findKey2(key2,allV,data) {
+function findKey2(key2,data) {
   let index=-1;
   for(let i=0;i<data.length;i++){
-    if(data[i][1]===key2&&data[i][2]===allV){
+    if(data[i][1]===key2){
       index=i;
       break
     }
@@ -98,7 +98,7 @@ function findKey2(key2,allV,data) {
   return index
 }
 //添加字符到排序数组中
-function sortAdd(key,key2,allV,val,dataMap){
+function sortAdd(key,key2,val,dataMap){
   const [n,len,dis]=dataMap.sortFindLen(key)
   if(dis===1){
     dataMap.splice(n+1,0,{key,data:[[val,key2]]})
@@ -106,7 +106,7 @@ function sortAdd(key,key2,allV,val,dataMap){
     dataMap.splice(n,0,{key,data:[[val,key2]]})
   }else if(dataMap[n].data.indexOf(key2)===-1){
     const data=dataMap[n].data;
-    const index=findKey2(key2,allV,data);
+    const index=findKey2(key2,data);
     if(index===-1){
       dataMap[n].data.push([val,key2])
     }else if(data[index][0]!==val){
