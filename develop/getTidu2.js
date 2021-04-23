@@ -92,17 +92,19 @@ function getTz (pos1,grayData) {
 function getTzY (pos1,grayData) {
   const [x1, y1, x2, y2] = pos1
   const fArr = [];
+  let allV=0;
   for (let y = y1; y < y2; y++) {
     let hu = 0;
     for (let x = x1; x < x2; x++) {
       const v = getV(x, y, grayData)
       if (v !== undefined) {
+        allV=allV+v
         hu++;
       }
     }
     fArr.push(getStrByNum(hu));
   }
-  return fArr.join('');
+  return [fArr.join(''),allV];
 }
 /*
 textArr 文字库
@@ -122,14 +124,14 @@ if(!fs.existsSync('oneMap.json')){
     const imageData=PNG.sync.read(buff)
     const grayData=getGrayData(imageData)
     const posArr=getLineArrByGrayData(grayData)
-    // setOpacity(grayData,imageData)
+    setOpacity(grayData,imageData)
     posArr.forEach(function (pos1,i) {
       const tz=getTz(pos1,grayData)
-      const tzY=getTzY(pos1,grayData)
-      sortAdd(tz,tzY,textArr[i],oneMap)
+      const [tzY,allV]=getTzY(pos1,grayData)
+      sortAdd(tz,tzY,allV,textArr[i],oneMap)
       // renderTextToImageData(textArr[i],pos1,imageData)
     })
-    // saveImageToFile(imageData,'demo2.png')
+    saveImageToFile(imageData,'../'+filename)
   })
 
   fs.writeFileSync('oneMap.json',JSON.stringify(oneMap))
@@ -144,7 +146,7 @@ function saveImageToFile(imageData,filename) {
 }
 
 function demo () {
-  const buff=fs.readFileSync('./test.png');
+  const buff=fs.readFileSync('../data/Arial12.png');
   const imageData=PNG.sync.read(buff)
   const grayData=getGrayData(imageData)
   const posArr=getLineArrByGrayData(grayData)
@@ -160,10 +162,9 @@ function demo () {
 
   const tzArr=getTzArr(posArr,grayData)
   tzArr.forEach(function (tz,m) {
+    const pos1=posArr[m]
     const tarr=[]
-    const darr=[]
     let i=0;
-    let pre=0;
     let d='';
     while (i<tz.length){
       if(d===''&&tz[i]==='0'){
@@ -171,8 +172,9 @@ function demo () {
       }else{
         const arr=sortFind(tz,i,oneMap)
         if(arr&&arr[2]===0){
+          const key2=getTzY([pos1[0]+i,pos1[1],pos1[0]+i+arr[1],pos1[3]])
           const obj=oneMap[arr[0]]
-          tarr.push(obj.data)
+          tarr.push(obj.data[0][0])
           if(d){
             tarr.push(d)
             d=''
@@ -190,8 +192,8 @@ function demo () {
 
     }
 
-    const pos1=posArr[m]
-    // renderTextToImageData(tarr,pos1,imageData)
+
+    renderTextToImageData(tarr,pos1,imageData)
 
     if(tarr.length>0){
       console.log(tarr)
