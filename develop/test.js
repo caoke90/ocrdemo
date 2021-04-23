@@ -56,7 +56,7 @@ tzArr 特征
 rectArr 文字数据
  */
 const textArr=getTextArr();
-const buff=fs.readFileSync('../data/Arial20.png');
+const buff=fs.readFileSync('../data/Arial31.png');
 const imageData=PNG.sync.read(buff)
 const grayData=getGrayData(imageData)
 const posArr=getLineArrByGrayData(grayData)

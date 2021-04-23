@@ -157,7 +157,7 @@ function getLineArrByGrayData(grayData) {
       const pos2=tempArr[d];
       if(pos1[1]-pos2[3]>20){
         tempArr.splice(d,1)
-      }else if(pos1[1]-pos2[3]>3&&pos1[5]===0&&pos2[5]===0){
+      }else if(pos1[1]-pos2[3]>4&&pos1[5]===0&&pos2[5]===0){
         tempArr.splice(d,1)
       }else if(!(pos1[0]>pos2[2]||pos1[2]<pos2[0])&&(pos1[4]===pos2[4]||pos1[1]<=pos2[3])){
         pos2[0]=Math.min(pos1[0],pos2[0])
