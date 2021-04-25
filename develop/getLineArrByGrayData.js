@@ -99,7 +99,7 @@ function getLineArrByGrayData(grayData) {
         }else{
           if(preLine.area.isBg===0){
             const bgLine=lData[preLine.area.pos[4]];
-            if(bgLine&&area.e<bgLine.area.e&&Math.abs(area.v-bgLine.area.v)<2){
+            if(bgLine&&area.e<bgLine.area.e&&Math.abs(area.v-bgLine.area.v)<3){
               area.isBg=3
               area.s=bgLine.area.s
               area.e=bgLine.area.e
@@ -127,7 +127,7 @@ function getLineArrByGrayData(grayData) {
           const pos2=tempArr[d];
           if(pos1[1]-pos2[3]>3){
             tempArr.splice(d,1)
-          }else if(pos1[4]===pos2[4]&&!(pos1[0]>pos2[2]+8||pos1[2]+8<pos2[0])||!(pos1[0]>pos2[2]||pos1[2]<pos2[0])){
+          }else if(!(pos1[0]>pos2[2]+2||pos1[2]+2<pos2[0])||pos1[4]===pos2[4]&&!(pos1[0]>pos2[2]+8||pos1[2]+8<pos2[0])){
             pos2[0]=Math.min(pos1[0],pos2[0])
             pos2[2]=Math.max(pos1[2],pos2[2])
             pos2[3]=Math.max(pos1[3],pos2[3])
@@ -167,7 +167,7 @@ function getLineArrByGrayData(grayData) {
     for(let d=tempArr.length-1;d>=0;d--){
       const pos2=tempArr[d];
       if(pos1[1]-pos2[3]>20){
-        tempArr.splice(d,1)
+        tempArr.splice(d,1);
       }else if(!(pos1[0]>pos2[2]||pos1[2]<pos2[0])){
         if(pos1[1]-pos2[3]>4&&pos1[5]===0&&pos2[5]===0){
           tempArr.splice(d,1)
@@ -184,7 +184,6 @@ function getLineArrByGrayData(grayData) {
           }
           pos1=pos2;
         }
-
       }
     }
     if(has){

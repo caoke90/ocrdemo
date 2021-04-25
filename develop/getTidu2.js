@@ -140,7 +140,7 @@ if(!fs.existsSync('oneMap.json')){
       const tz=getTz(pos1,grayData)
       const tzY=getTzY(pos1,grayData)
       sortAdd(tz,tzY,textArr[i],oneMap)
-      renderTextToImageData(textArr[i]||'t',pos1,imageData)
+      // renderTextToImageData(textArr[i]||'t',pos1,imageData)
     })
     saveImageToFile(imageData,'../'+filename)
   })
