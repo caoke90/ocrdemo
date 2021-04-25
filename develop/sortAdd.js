@@ -84,7 +84,7 @@ function findLen(str,hasSortArr,callback) {
 //[n,len,dis]
 Array.prototype.sortFindLen=function(key,n1=0,n2=0){
   return findLen(key,this,function (str1,obj) {
-    return compareLen(str1,obj.key,n1,n2)
+    return compareLen(str1,obj[0],n1,n2)
   })
 }
 function findKey2(key2,data) {
@@ -111,24 +111,26 @@ function findKey2AndVal(key2,val,data) {
 function sortAdd(key,key2,val,dataMap){
   const [n,len,dis]=dataMap.sortFindLen(key)
   if(dis===1){
-    dataMap.splice(n+1,0,{key,data:[[val,key2]]})
+    dataMap.splice(n+1,0,[key,[[val,key2]]])
   }else if(dis===-1){
-    dataMap.splice(n,0,{key,data:[[val,key2]]})
-  }else if(dataMap[n].data.indexOf(key2)===-1){
-    const data=dataMap[n].data;
+    dataMap.splice(n,0,[key,[[val,key2]]])
+  }else{
+    const data=dataMap[n][1];
     const index=findKey2(key2,data);
     if(index===-1){
-      dataMap[n].data.push([val,key2])
+      data.push([val,key2])
     }else if(data[index][0]!==val){
       const index2=findKey2AndVal(key2,val,data);
       if(index2===-1){
-        dataMap[n].data.push([val,key2])
+        data.push([val,key2])
       }else{
-        //交换位置
-        const temp=dataMap[n].data[index]
-        dataMap[n].data[index]=dataMap[n].data[index2];
-        dataMap[n].data[index2]=temp;
         console.log(index,data,key,key2,val)
+        if(index!==index2){
+          //交换位置
+          const temp=data[index]
+          data[index]=data[index2];
+          data[index2]=temp;
+        }
       }
     }
   }

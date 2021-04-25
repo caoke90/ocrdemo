@@ -46,6 +46,8 @@ function setOpacity(grayData,imageData) {
       const v=getV(x,y,grayData)
       if(v===undefined){
         changeV2(x,y,imageData)
+      }else{
+        changeV3(x,y,imageData)
       }
     }
   }
@@ -124,7 +126,7 @@ const pngArr=[]
 for(let i=12;i<33;i++){
   pngArr.push(`Arial${i}.png`);
 }
-
+pngArr.reverse()
 let oneMap=[]
 if(!fs.existsSync('oneMap.json')){
   pngArr.forEach(function (filename) {
@@ -138,7 +140,7 @@ if(!fs.existsSync('oneMap.json')){
       const tz=getTz(pos1,grayData)
       const tzY=getTzY(pos1,grayData)
       sortAdd(tz,tzY,textArr[i],oneMap)
-      renderTextToImageData(textArr[i],pos1,imageData)
+      renderTextToImageData(textArr[i]||'t',pos1,imageData)
     })
     saveImageToFile(imageData,'../'+filename)
   })
@@ -148,6 +150,17 @@ if(!fs.existsSync('oneMap.json')){
 }else{
   oneMap=JSON.parse(fs.readFileSync('oneMap.json').toString())
 }
+const prdMap=[]
+oneMap.forEach(function (arr) {
+  const data=arr[1]
+  if(data.length===1){
+    prdMap.push([arr[0],data[0][0]])
+  }else{
+    console.log(arr)
+    prdMap.push(arr)
+  }
+})
+fs.writeFileSync('../prd/prdMap.json',JSON.stringify(prdMap))
 
 function saveImageToFile(imageData,filename) {
   var buffer = PNG.sync.write(imageData, {filterType: 4});
@@ -204,7 +217,7 @@ function demo () {
     }
 
 
-    renderTextToImageData(tarr,pos1,imageData)
+    // renderTextToImageData(tarr,pos1,imageData)
 
     if(tarr.length>0){
       console.log(tarr)

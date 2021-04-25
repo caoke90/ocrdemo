@@ -26,6 +26,7 @@ function getLineArrByGrayData(grayData) {
       const obj={
         x,y,w,v,
         area:{
+          v,
           hw:w,
           len:1,
           isBg:0,
@@ -93,12 +94,12 @@ function getLineArrByGrayData(grayData) {
         area.isBg=1;
       }else if(index>0&&lData[index-1].y===y){
         const preLine=lData[index-1];
-        if(area.hw>100&&preLine.area.hw>300){
+        if(area.hw>100&&preLine.area.isBg!==0){
           area.isBg=2;
         }else{
           if(preLine.area.isBg===0){
             const bgLine=lData[preLine.area.pos[4]];
-            if(bgLine&&(bgLine.v===v||area.hw<4&&Math.abs(v-bgLine.v)<5)&&area.e<bgLine.area.e){
+            if(bgLine&&area.e<bgLine.area.e&&Math.abs(area.v-bgLine.area.v)<2){
               area.isBg=3
               area.s=bgLine.area.s
               area.e=bgLine.area.e
@@ -106,24 +107,27 @@ function getLineArrByGrayData(grayData) {
               area.pos[4]=preLine.area.pos[4]
             }
           }else{
-            if(area.hw<4&&area.e<preLine.area.e&&Math.abs(v-preLine.v)<5){
-              area.isBg=3
-              area.s=preLine.area.s
-              area.e=preLine.area.e
+            if(area.e<preLine.area.e&&Math.abs(area.v-preLine.area.v)<3){
+              for(let d=area.s;d<=area.e;d++){
+                if(lData[d].area===area){
+                  lData[d].area=preLine.area
+                }
+              }
             }else{
               area.pos[4]=preLine.area.s
             }
           }
         }
       }
-      if(!area.isBg){
+      //左右合并
+      if(!line.area.isBg){
         let pos1=area.pos;
         let has=true;
         for(let d=tempArr.length-1;d>=0;d--){
           const pos2=tempArr[d];
           if(pos1[1]-pos2[3]>3){
             tempArr.splice(d,1)
-          }else if(pos1[4]===pos2[4]&&!(pos1[0]>pos2[2]+6||pos1[2]+6<pos2[0])||!(pos1[0]>pos2[2]||pos1[2]<pos2[0])){
+          }else if(pos1[4]===pos2[4]&&!(pos1[0]>pos2[2]+8||pos1[2]+8<pos2[0])||!(pos1[0]>pos2[2]||pos1[2]<pos2[0])){
             pos2[0]=Math.min(pos1[0],pos2[0])
             pos2[2]=Math.max(pos1[2],pos2[2])
             pos2[3]=Math.max(pos1[3],pos2[3])
@@ -142,7 +146,7 @@ function getLineArrByGrayData(grayData) {
         }
       }
     }
-    if(area.isBg){
+    if(line.area.isBg){
       const k=grayData.width*y;
       for(let i=x;i<x+w;i++){
         grayData.data[k+i]=undefined;
@@ -150,34 +154,37 @@ function getLineArrByGrayData(grayData) {
 
     }
   })
-  //求行区域 背景相同
+  //上下合并：求行区域 背景相同
   const rectArr=[]
   tempArr=[]
   posArr.forEach(function (pos1) {
     const w1=pos1[2]-pos1[0]
     const h1=pos1[3]-pos1[1]
     //是否二、三
-    pos1[5]=w1>2*h1&&h1<5&&w1<50?1:0;
+    pos1[5]=w1>2*h1&&h1<4&&w1<50?2:0;
 
     let has=true;
     for(let d=tempArr.length-1;d>=0;d--){
       const pos2=tempArr[d];
       if(pos1[1]-pos2[3]>20){
         tempArr.splice(d,1)
-      }else if(pos1[1]-pos2[3]>4&&pos1[5]===0&&pos2[5]===0){
-        tempArr.splice(d,1)
-      }else if(!(pos1[0]>pos2[2]||pos1[2]<pos2[0])&&pos1[4]===pos2[4]){
-        pos2[0]=Math.min(pos1[0],pos2[0])
-        pos2[2]=Math.max(pos1[2],pos2[2])
-        pos2[3]=Math.max(pos1[3],pos2[3])
-        pos2[5]=0;
-        if(!has){
-          tempArr.splice(tempArr.indexOf(pos1),1)
-          rectArr.splice(rectArr.indexOf(pos1),1)
-        }else{
-          has=false
+      }else if(!(pos1[0]>pos2[2]||pos1[2]<pos2[0])){
+        if(pos1[1]-pos2[3]>4&&pos1[5]===0&&pos2[5]===0){
+          tempArr.splice(d,1)
+        }else if(pos1[4]===pos2[4]){
+          pos2[0]=Math.min(pos1[0],pos2[0])
+          pos2[2]=Math.max(pos1[2],pos2[2])
+          pos2[3]=Math.max(pos1[3],pos2[3])
+          pos2[5]=0;
+          if(!has){
+            tempArr.splice(tempArr.indexOf(pos1),1)
+            rectArr.splice(rectArr.indexOf(pos1),1)
+          }else{
+            has=false
+          }
+          pos1=pos2;
         }
-        pos1=pos2;
+
       }
     }
     if(has){
