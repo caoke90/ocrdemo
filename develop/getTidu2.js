@@ -77,6 +77,7 @@ function getTzArr (posArr,grayData) {
 function getTz (pos1,grayData) {
   const [x1, y1, x2, y2] = pos1
   const fArr = [];
+
   for (let x = x1; x < x2; x++) {
     let hu = 0;
     for (let y = y1; y < y2; y++) {
@@ -85,7 +86,12 @@ function getTz (pos1,grayData) {
         hu++;
       }
     }
-    fArr.push(getStrByNum(hu));
+    if(hu===0&&fArr.length===0){
+
+    }else{
+      fArr.push(getStrByNum(hu));
+    }
+
   }
   return fArr.join('');
 }
@@ -100,7 +106,11 @@ function getTzY (pos1,grayData) {
         hu++;
       }
     }
-    fArr.push(getStrByNum(hu));
+    if(hu===0&&fArr.length===0){
+
+    }else{
+      fArr.push(getStrByNum(hu));
+    }
   }
   return fArr.join('');
 }
@@ -155,6 +165,8 @@ function demo () {
       const v=getV(x,y,grayData)
       if(v===undefined){
         changeV2(x,y,imageData)
+      }else{
+        changeV1(x,y,imageData)
       }
     }
   }

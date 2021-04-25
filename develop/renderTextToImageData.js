@@ -10,8 +10,8 @@ const dataMap={};
 function setColor(v,x,y,imageData) {
   const k=4*imageData.width*y+4*x;
   imageData.data[k]=255;
-  imageData.data[k+1]=v;
-  imageData.data[k+2]=v;
+  imageData.data[k+1]=0;
+  imageData.data[k+2]=0;
   imageData.data[k+3]=255;
 }
 function renderTextInit() {

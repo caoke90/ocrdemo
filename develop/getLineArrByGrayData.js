@@ -98,7 +98,7 @@ function getLineArrByGrayData(grayData) {
         }else{
           if(preLine.area.isBg===0){
             const bgLine=lData[preLine.area.pos[4]];
-            if(bgLine&&bgLine.v===v&&bgLine.area.e>area.e){
+            if(bgLine&&(bgLine.v===v||area.hw<4&&Math.abs(v-bgLine.v)<5)&&area.e<bgLine.area.e){
               area.isBg=3
               area.s=bgLine.area.s
               area.e=bgLine.area.e
@@ -106,7 +106,13 @@ function getLineArrByGrayData(grayData) {
               area.pos[4]=preLine.area.pos[4]
             }
           }else{
-            area.pos[4]=preLine.area.s
+            if(area.hw<4&&area.e<preLine.area.e&&Math.abs(v-preLine.v)<5){
+              area.isBg=3
+              area.s=preLine.area.s
+              area.e=preLine.area.e
+            }else{
+              area.pos[4]=preLine.area.s
+            }
           }
         }
       }
@@ -137,10 +143,11 @@ function getLineArrByGrayData(grayData) {
       }
     }
     if(area.isBg){
-      const k=grayData.width*y
+      const k=grayData.width*y;
       for(let i=x;i<x+w;i++){
         grayData.data[k+i]=undefined;
       }
+
     }
   })
   //求行区域 背景相同
