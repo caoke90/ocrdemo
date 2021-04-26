@@ -5,7 +5,7 @@ const getV=require('./getV')
 const getLineArrByGrayData=require('./getLineArrByGrayData')
 const getStrByNum=require('./getStrByNum')
 const getTextArr=require('./getTextArr')
-const {sortAdd,sortFind}=require('./sortAdd')
+const {sortAdd}=require('./sortAdd')
 const {renderTextInit,renderTextToImageData}=require('./renderTextToImageData')
 renderTextInit()
 function changeV(x,y,imageData) {
@@ -154,9 +154,11 @@ const prdMap=[]
 oneMap.forEach(function (arr) {
   const data=arr[1]
   if(data.length===1){
-    prdMap.push([arr[0],data[0][0]])
+    if(Array.isArray(data[0][1])){
+      console.log(data[0][1])
+    }
+    prdMap.push([arr[0],data[0][1]])
   }else{
-    console.log(arr)
     prdMap.push(arr)
   }
 })
@@ -166,65 +168,3 @@ function saveImageToFile(imageData,filename) {
   var buffer = PNG.sync.write(imageData, {filterType: 4});
   fs.writeFileSync(filename,buffer)
 }
-
-function demo () {
-  const buff=fs.readFileSync('../data/Arial12.png');
-  const imageData=PNG.sync.read(buff)
-  const grayData=getGrayData(imageData)
-  const posArr=getLineArrByGrayData(grayData)
-  //透明
-  for (let y = 0; y < grayData.height; y++) {
-    for (let x = 0; x < grayData.width; x++) {
-      const v=getV(x,y,grayData)
-      if(v===undefined){
-        changeV2(x,y,imageData)
-      }else{
-        changeV1(x,y,imageData)
-      }
-    }
-  }
-
-  const tzArr=getTzArr(posArr,grayData)
-  tzArr.forEach(function (tz,m) {
-    const pos1=posArr[m]
-    const tarr=[]
-    let i=0;
-    let d='';
-    while (i<tz.length){
-      if(d===''&&tz[i]==='0'){
-        i++
-      }else{
-        const arr=sortFind(tz,i,oneMap)
-        if(arr&&arr[2]===0){
-          const key2=getTzY([pos1[0]+i,pos1[1],pos1[0]+i+arr[1],pos1[3]])
-          const obj=oneMap[arr[0]]
-          tarr.push(obj.data[0][0])
-          if(d){
-            tarr.push(d)
-            d=''
-          }
-          i=i+arr[1];
-        }else{
-          d=d+tz[i]
-          if(i===tz.length.length-1&&d){
-            tarr.push(d)
-            d=''
-          }
-          i++
-        }
-      }
-
-    }
-
-
-    // renderTextToImageData(tarr,pos1,imageData)
-
-    if(tarr.length>0){
-      console.log(tarr)
-    }
-  })
-
-  saveImageToFile(imageData,'demo2.png')
-}
-
-// demo();

@@ -90,7 +90,7 @@ Array.prototype.sortFindLen=function(key,n1=0,n2=0){
 function findKey2(key2,data) {
   let index=-1;
   for(let i=0;i<data.length;i++){
-    if(data[i][1]===key2){
+    if(data[i][0]===key2){
       index=i;
       break
     }
@@ -111,51 +111,44 @@ function findKey2AndVal(key2,val,data) {
 function sortAdd(key,key2,val,dataMap){
   const [n,len,dis]=dataMap.sortFindLen(key)
   if(dis===1){
-    dataMap.splice(n+1,0,[key,[[val,key2]]])
+    dataMap.splice(n+1,0,[key,[[key2,val]]])
   }else if(dis===-1){
-    dataMap.splice(n,0,[key,[[val,key2]]])
+    dataMap.splice(n,0,[key,[[key2,val]]])
   }else{
     const data=dataMap[n][1];
-    const index=findKey2(key2,data);
-    if(index===-1){
-      data.push([val,key2])
-    }else if(data[index][0]!==val){
-      const index2=findKey2AndVal(key2,val,data);
-      if(index2===-1){
-        data.push([val,key2])
-      }else{
-        console.log(index,data,key,key2,val)
-        if(index!==index2){
-          //交换位置
-          const temp=data[index]
-          data[index]=data[index2];
-          data[index2]=temp;
+    const [n2,len2,dis2]=data.sortFindLen(key2);
+    if(dis2===1){
+      data.splice(n2+1,0,[key2,val])
+    }else if(dis2===-1){
+      data.splice(n2,0,[key2,val])
+    }else{
+      if(Array.isArray(data[n2][1])){
+        if(data[n2][1].indexOf(val)===-1){
+          data[n2][1].push(val)
         }
+      }else if(data[n2][1]!==val){
+        data[n2][1]=[data[n2][1],val]
       }
     }
   }
-
 }
+
 function sortFind(str,i,dataMap){
   const [n,len,dis]=dataMap.sortFindLen(str,i)
   if(dis===1){
-    if(len===dataMap[n].key.length){
+    if(len===dataMap[n][0].length){
       return [n,len,0]
     }else{
       let m=n-1;
-      while (m>-1&&dataMap[m].key.length>len) {
+      while (m>-1&&dataMap[m][0].length>len) {
         m--
       }
-      if(m>-1&&dataMap[m].key.length===len&&dataMap[m].key[dataMap[m].key.length-1]===str[i+len-1]){
+      if(m>-1&&dataMap[m][0].length===len&&dataMap[m][0][dataMap[m][0].length-1]===str[i+len-1]){
         return [m,len,0]
       }
     }
-
-  }else if(dis===-1){
-
-  }else{
-    return [n,len,0];
   }
+  return [n,len,dis];
 }
 
 // const arr=[]
