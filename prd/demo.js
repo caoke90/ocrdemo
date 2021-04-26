@@ -136,6 +136,7 @@ function demo () {
     const tarr=[]
     let i=0;
     let d='';
+    let preText='';
     while (i<tz.length){
       if(d===''&&tz[i]==='0'){
         i++
@@ -154,9 +155,25 @@ function demo () {
               isOk=false
             }
           }else if(Array.isArray(data[1])){
-            //todo 找出最近的
-            tarr.push(data[1][0])
+            //找出最近的
+            let minNum;
+            let minI;
+            const preCode=preText.charCodeAt(0);
+            for(let h=0;h<data[1].length;h++){
+              const code=data[1][h].charCodeAt(0)
+              const num=Math.abs(preCode-code);
+              if(h===0){
+                minNum=num;
+                minI=h;
+              }else if(num<minNum){
+                minNum=num;
+                minI=h;
+              }
+            }
+            preText=data[1][minI]
+            tarr.push(data[1][minI])
           }else{
+            preText=data[1]
             tarr.push(data[1])
           }
         }
