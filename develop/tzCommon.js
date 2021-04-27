@@ -31,8 +31,6 @@ function getTz (pos1,grayData) {
     for (let y = y1; y < y2;y++ ) {
       const v = getV(x, y, grayData)
       if (v !== undefined) {
-        const h=getSameH(v,x,y,grayData)
-        y=y+h-1;
         hu++;
       }
     }
@@ -54,8 +52,6 @@ function getTzY (pos1,grayData) {
     for (let x = x1; x < x2; x++) {
       const v = getV(x, y, grayData)
       if (v !== undefined) {
-        const w=getSameW(v,x,y,grayData)
-        x=x+w-1;
         hu++;
       }
     }
@@ -71,7 +67,6 @@ function getTzY (pos1,grayData) {
 }
 module.exports={
   getTzArr,
-  getSameH,
   getTz,
   getTzY
 }
