@@ -128,6 +128,7 @@ function sortAdd(key,key2,val,dataMap){
         }
       }else if(data[n2][1]!==val){
         data[n2][1]=[data[n2][1],val]
+        console.log(data[n2][1])
       }
     }
   }
