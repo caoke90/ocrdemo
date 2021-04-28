@@ -151,7 +151,6 @@ function getLineArrByGrayData(grayData) {
       for(let i=x;i<x+w;i++){
         grayData.data[k+i]=undefined;
       }
-
     }
   })
   //上下合并：求行区域 背景相同

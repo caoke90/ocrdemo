@@ -72,14 +72,19 @@ if(!fs.existsSync('oneMap.json')){
     const grayData=getGrayData(imageData)
     const posArr=getLineArrByGrayData(grayData)
     setOpacity(grayData,imageData)
-    console.log(filename,posArr.length)
-    posArr.forEach(function (pos1,i) {
-      const tz=getTz(pos1,grayData)
-      const tzY=getTzY(pos1,grayData)
-      sortAdd(tz,tzY,textArr[i],oneMap)
-      // renderTextToImageData(textArr[i]||'t',pos1,imageData)
-    })
-    saveImageToFile(imageData,'../'+filename)
+    console.log(filename)
+    if(posArr.length===3557){
+      posArr.forEach(function (pos1,i) {
+        const tz=getTz(pos1,grayData)
+        const tzY=getTzY(pos1,grayData)
+        sortAdd(tz,tzY,textArr[i],oneMap)
+        // renderTextToImageData(textArr[i]||'t',pos1,imageData)
+      })
+      saveImageToFile(imageData,'../'+filename)
+    }else{
+      throw filename;
+    }
+
   })
 
   fs.writeFileSync('oneMap.json',JSON.stringify(oneMap))
